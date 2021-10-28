@@ -12,6 +12,7 @@ import { auth as authIO } from './middleware/socketIO/auth'
 import { adminLogin, base, login, logout } from './routes'
 import { ticketsGet, ticketsPost, ticketsPutCancel } from './routes/tickets'
 import { User } from './types/user'
+import jwt from 'jsonwebtoken'
 
 dotenv.config()
 
@@ -92,7 +93,29 @@ app.post('/tickets', auth, ticketsPost(io))
 app.put('/tickets/:id/canceled', auth, ticketsPutCancel(io))
 
 
-io.use(authIO) // auth middleware
+// io.use(authIO) 
+io.use((socket, next) => {
+  if(!process.env.TOKEN_KEY) {
+    console.error('missing process.env.TOKEN_KEY')
+    throw new Error('missing process.env.TOKEN_KEY')
+  }
+
+  const token = socket.handshake.auth.token
+  if (!token) {
+    return next(new Error('Unauthorized'))
+  }
+
+  try {
+    socket.data.decoded = jwt.verify(token, process.env.TOKEN_KEY)
+  }
+  catch (err) {
+    return next(new Error('Unauthorized'))
+  }
+
+  next()
+}) 
+
+// auth middleware
 io.on('connection', (socket) => {
   const user = socket.data.decoded.user as User
   const userTicket = ticketsFactory.getActiveByPhone(user.phone as string)

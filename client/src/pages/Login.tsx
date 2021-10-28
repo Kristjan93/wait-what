@@ -26,8 +26,9 @@ export const Login: React.FC = () => {
       body: JSON.stringify({ phone, name })
     })
     if(response.ok) {
-      // const { token } = await response.json() as ResponseLogin
-      await response.json() as ResponseLogin
+      const { token } = await response.json() as ResponseLogin
+      localStorage.setItem('token', token)
+      // await response.json() as ResponseLogin
 
       window.location.href = '/'
     }

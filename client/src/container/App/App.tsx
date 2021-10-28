@@ -22,7 +22,12 @@ function App() {
   useEffect(() => {
     const socket = io(`${__api__}`, {
       withCredentials: true,
-      autoConnect: false
+      autoConnect: false,
+
+      //
+      auth: {
+        token: localStorage.getItem('token')
+      }
     })
     socket.connect()
 
