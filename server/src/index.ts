@@ -19,7 +19,6 @@ const origin = process.env.NODE_ENV === 'production' ? 'https://wait-what.vercel
 const app = express()
 app.use(cors({
   credentials: true,
-  preflightContinue: true,
   origin
 }))
 app.use(cookieParser())
@@ -81,10 +80,10 @@ app.post('/admin/tickets/:id/status', adminAuth, (req, res) => {
 })
 
 // Express User
+app.post('/login', login)
 app.get('/', auth, base)
 app.get('/tickets/:id', ticketsGet)
 app.post('/logout', auth, logout)
-app.post('/login', login)
 app.post('/tickets', auth, ticketsPost(io))
 /**
  * Marks a ticket as canceled
