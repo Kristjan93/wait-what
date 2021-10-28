@@ -25,7 +25,7 @@ export const login = (req: Request, res: Response) => {
     maxAge: expireTime,
     // httpOnly: process.env.NODE_ENV !== 'development',
     httpOnly: false,
-    domain: process.env.NODE_ENV === 'production' ? 'https://wait-what.vercel.app' : '/'
+    domain: process.env.NODE_ENV === 'production' ? 'https://wait-what.herokuapp.com' : '/'
     // secure: process.env.NODE_ENV !== 'development',
   }
   
