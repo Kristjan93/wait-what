@@ -37,7 +37,7 @@ const io = new Server(server, {
 // io.adapter(createAdapter(pubClient, subClient))
 
 // Express Admin
-app.post('/me', (req, res) => {
+app.get('/me', (req, res) => {
   return res.send('Kristjan')
 })
 app.post('/admin/login', adminLogin)
@@ -109,7 +109,7 @@ io.on('disconnect', () => {
 })
 
 
-const port = process.env.PORT || 4000
+const port = process.env.PORT || 3000
 server.listen(port, () => {
   console.log(`wait-what is running now running on port: ${port}`)
 })

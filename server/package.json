@@ -5,7 +5,6 @@
   "license": "MIT",
   "scripts": {
     "start": "nodemon src/index.ts",
-    "build": "tsc && node build/index.js",
     "postinstall": "tsc",
     "lint": "eslint . --ext .ts",
     "deploy": "git add . && git commit -m Heroku && git push heroku master"
