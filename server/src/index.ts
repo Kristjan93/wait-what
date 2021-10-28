@@ -15,10 +15,11 @@ import { User } from './types/user'
 
 dotenv.config()
 
+const origin = process.env.NODE_ENV === 'production' ? 'https://wait-what.vercel.app' : 'http://localhost:3000'
 const app = express()
 app.use(cors({
   credentials: true,
-  origin: 'http://localhost:3000'
+  origin
 }))
 app.use(cookieParser())
 app.use(express.json())
@@ -26,7 +27,7 @@ app.use(express.json())
 const server = http.createServer(app)
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin,
     methods: ['GET', 'POST'],
     credentials: true
   }
