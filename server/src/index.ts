@@ -40,7 +40,7 @@ const io = new Server(server, {
 
 // Express Admin
 app.get('/me', (req, res) => {
-  return res.send('Kristjan')
+  return res.send('Kristjan 2')
 })
 app.post('/admin/login', adminLogin)
 
