@@ -110,7 +110,7 @@ io.on('disconnect', () => {
 })
 
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 4000
 server.listen(port, () => {
   console.log(`wait-what is running now running on port: ${port}`)
 })

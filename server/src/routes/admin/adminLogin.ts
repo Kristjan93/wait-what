@@ -23,7 +23,7 @@ export const adminLogin = (req: Request, res: Response) => {
   const options: CookieSerializeOptions = {
     maxAge: expireTime,
     httpOnly: process.env.NODE_ENV !== 'development',
-    domain: '/'
+    domain: process.env.NODE_ENV === 'production' ? 'https://wait-what.vercel.app' : '/'
     // secure: process.env.NODE_ENV !== 'development',
   }
   
