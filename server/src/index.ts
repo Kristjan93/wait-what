@@ -1,10 +1,10 @@
-import { createAdapter } from '@socket.io/redis-adapter'
+// import { createAdapter } from '@socket.io/redis-adapter'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
 import http from 'http'
-import { createClient } from 'redis'
+// import { createClient } from 'redis'
 import { Server } from 'socket.io'
 import { ticketsFactory } from './data/tickets'
 import { adminAuth, auth } from './middleware/express/auth'
@@ -32,11 +32,14 @@ const io = new Server(server, {
   }
 })
 
-const pubClient = createClient({ host: 'localhost', port: 6379 })
-const subClient = pubClient.duplicate()
-io.adapter(createAdapter(pubClient, subClient))
+// const pubClient = createClient({ host: 'localhost', port: 6379 })
+// const subClient = pubClient.duplicate()
+// io.adapter(createAdapter(pubClient, subClient))
 
 // Express Admin
+app.post('/me', (req, res) => {
+  return res.send('Kristjan')
+})
 app.post('/admin/login', adminLogin)
 
 app.post('/admin/tickets/next', adminAuth, (req, res) => {
@@ -106,7 +109,7 @@ io.on('disconnect', () => {
 })
 
 
-const port = 4000
+const port = process.env.PORT || 4000
 server.listen(port, () => {
   console.log(`wait-what is running now running on port: ${port}`)
 })
