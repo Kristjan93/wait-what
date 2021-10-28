@@ -19,6 +19,7 @@ const origin = process.env.NODE_ENV === 'production' ? 'https://wait-what.vercel
 const app = express()
 app.use(cors({
   credentials: true,
+  preflightContinue: true,
   origin
 }))
 app.use(cookieParser())
