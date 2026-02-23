@@ -5,11 +5,11 @@ import { User } from "../types/user"
 type Action =
   | { type: 'UNAUTHORIZED' }
   | {
-    type: 'TICKETS'; 
+    type: 'TICKETS';
     value: { tickets: Ticket[] }
   }
   | {
-    type: 'USER_TICKET'; 
+    type: 'USER_TICKET';
     value: { userTicket: Ticket | undefined }
   }
   | { type: 'STATE_UPDATE', value: StateAuthorized }
@@ -53,8 +53,7 @@ const appReducer = (state: AppState, action: Action): AppState => {
     }
 }
 
-
-export const AppProvider: React.FC = ({ 
+export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [state, dispatch] = useReducer(appReducer, { user: undefined })

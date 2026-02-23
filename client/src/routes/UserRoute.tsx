@@ -1,20 +1,17 @@
 import React from 'react'
-import { Redirect, Route, RouteProps } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { useAppState } from '../providers/appProvider'
 
-export const UserRoute:React.FC<RouteProps> = ({
-  children,
-  ...rest
-}) => {
+export const UserRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { state } = useAppState()
 
   if(state.user?.role === 'admin') {
-    return <Redirect to="/admin" />
+    return <Navigate to="/admin" replace />
   }
 
   if(state.user?.role === 'user') {
-    return <Route {...rest}>{children}</Route>
+    return <>{children}</>
   }
 
-  return <Redirect to="/login" />
+  return <Navigate to="/login" replace />
 }

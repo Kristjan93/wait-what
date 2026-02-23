@@ -1,20 +1,20 @@
 import {
   Box, Grommet, ResponsiveContext, Spinner
-} from 'grommet';
-import React, { useEffect, useState } from 'react';
+} from 'grommet'
+import React, { useEffect, useState } from 'react'
 import {
-  BrowserRouter as Router, Route, Switch
-} from "react-router-dom";
-import io from 'socket.io-client';
-import { __api__ } from '../../constants/endpoint';
-import { Admin } from '../../pages/Admin';
-import { Home } from '../../pages/Home';
-import { Login } from '../../pages/Login';
-import { Logout } from '../../pages/Logout';
-import { AppProvider, Context, useAppState } from '../../providers/appProvider';
-import { UserRoute } from '../../routes/UserRoute';
-import { IOResponseTickets, ResponseMain } from '../../types/responses';
-import { SocketIOError } from '../../types/socketIO';
+  BrowserRouter as Router, Route, Routes
+} from "react-router-dom"
+import { io } from 'socket.io-client'
+import { __api__ } from '../../constants/endpoint'
+import { Admin } from '../../pages/Admin'
+import { Home } from '../../pages/Home'
+import { Login } from '../../pages/Login'
+import { Logout } from '../../pages/Logout'
+import { AppProvider, Context, useAppState } from '../../providers/appProvider'
+import { UserRoute } from '../../routes/UserRoute'
+import { IOResponseTickets, ResponseMain } from '../../types/responses'
+import { SocketIOError } from '../../types/socketIO'
 
 function App() {
   const { dispatch } = useAppState() as Context
@@ -23,29 +23,19 @@ function App() {
     const socket = io(`${__api__}`, {
       withCredentials: true,
       autoConnect: false,
-
-      //
       auth: {
         token: localStorage.getItem('token')
       }
     })
     socket.connect()
 
-    socket.on('connect', () => {
-      console.log('socket io connected')
-    })
-
-    // TODO: route to login
     socket.on("connect_error", (error) => {
       const message = error.message as SocketIOError
       if(message === 'Unauthorized') {
         dispatch({ type: 'UNAUTHORIZED' })
       }
-      else {
-        console.error('error:', error)
-      }
       setLoading(false)
-    });
+    })
 
     socket.on('tickets', (data) => {
       const { tickets } = data as IOResponseTickets
@@ -53,7 +43,6 @@ function App() {
     })
 
     socket.on('initialize', (data) => {
-      console.log('init')
       const {
         user,
         tickets,
@@ -74,8 +63,8 @@ function App() {
   }, [])
 
   return (
-    <Box 
-      fill 
+    <Box
+      fill
       background="accent-4"
       align="center"
       justify="center"
@@ -83,23 +72,15 @@ function App() {
       {loading ? (
         <Spinner size="xlarge" message="loading spinner" />
       ) : (
-        <Switch>
-          <UserRoute exact path="/">
-            <Home />
-          </UserRoute>
-          <Route path="/admin">
-            <Admin />
-          </Route>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/logout">
-            <Logout />
-          </Route>
-        </Switch>
+        <Routes>
+          <Route path="/" element={<UserRoute><Home /></UserRoute>} />
+          <Route path="/admin/*" element={<Admin />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
+        </Routes>
       )}
     </Box>
-  );
+  )
 }
 
 const WrappedApp = () => {
@@ -107,7 +88,7 @@ const WrappedApp = () => {
     <Router>
       <Grommet plain full>
         <ResponsiveContext.Consumer>
-          {size => (
+          {() => (
             <Box fill background="accent-4" align="center" justify="center">
               <AppProvider>
                 <App />
@@ -120,4 +101,4 @@ const WrappedApp = () => {
   )
 }
 
-export default WrappedApp;
+export default WrappedApp

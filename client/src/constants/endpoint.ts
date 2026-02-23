@@ -1,1 +1,1 @@
-export const __api__ = process.env.NODE_ENV === 'development' ? 'http://localhost:4000' : 'https://wait-what.herokuapp.com'
+export const __api__ = import.meta.env.VITE_API_URL || 'http://localhost:4000'

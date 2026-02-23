@@ -8,15 +8,17 @@ import { jsxConditions } from '../utils/jsxConditions'
 
 export const Home: React.FC = () => {
   const { state, dispatch } = useAppState() as ContextAuthorized
-  
+
   const [handlingTakeTicket, setHandlingTakeTicket] = useState(false)
-  const refHandlingTakeTicket = useRef(false) // Prevent button press spam
+  const [error, setError] = useState<string | null>(null)
+  const refHandlingTakeTicket = useRef(false)
   const handleTicketTake = async () => {
     if(refHandlingTakeTicket.current) { return }
     refHandlingTakeTicket.current = true
     setHandlingTakeTicket(true)
+    setError(null)
 
-    const response = await fetch(`${__api__}/tickets`, { 
+    const response = await fetch(`${__api__}/tickets`, {
       method: 'POST',
       credentials: 'include'
     })
@@ -27,8 +29,7 @@ export const Home: React.FC = () => {
       dispatch({ type: 'USER_TICKET', value: { userTicket: ticket } })
     }
     else {
-      const text = await response.text()
-      console.log(text)
+      setError('Failed to take ticket')
     }
 
     refHandlingTakeTicket.current = false
@@ -37,6 +38,7 @@ export const Home: React.FC = () => {
 
   const handleTicketCancel = async () => {
     if(!state.userTicket) { return }
+    setError(null)
 
     const { id } = state.userTicket
     const response = await fetch(`${__api__}/tickets/${id}/canceled`, {
@@ -44,14 +46,11 @@ export const Home: React.FC = () => {
       credentials: 'include'
     })
     if(response.ok) {
-      // const json = await response.json()
       await response.json()
       dispatch({ type: 'USER_TICKET', value: { userTicket: undefined } })
     }
     else {
-      // TODO
-      console.error('error')
-      console.log(response)
+      setError('Failed to cancel ticket')
     }
   }
 
@@ -59,38 +58,38 @@ export const Home: React.FC = () => {
 
   return state.userTicket ? (
     <>
-      <Box 
-        pad="medium" 
-        direction="row" 
-        justify="center" 
-        align="center" 
+      <Box
+        pad="medium"
+        direction="row"
+        justify="center"
+        align="center"
         style={{ position: 'relative' }}
         animation={['fadeIn', 'slideDown']}
       >
-        <Button 
+        <Button
           margin="small"
           hoverIndicator="background"
-          icon={<Trash size="large" />} 
-          onClick={handleTicketCancel} 
-          style={{ 
-            position: 'absolute', 
-            right: 0, 
-            top: 0, 
-            zIndex: 100, 
-            borderRadius: '100%' 
+          icon={<Trash size="large" />}
+          onClick={handleTicketCancel}
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            zIndex: 100,
+            borderRadius: '100%'
           }}
         />
 
         <TicketIcon style={{ width: 'min(560px, 50vw)', height: '100%' }}  />
-        <Box 
-          height="100%" 
-          width="100%" 
-          style={{ position: 'absolute', background: 'rgba(255,255,255,0.4)' }} 
+        <Box
+          height="100%"
+          width="100%"
+          style={{ position: 'absolute', background: 'rgba(255,255,255,0.4)' }}
           round='large'
         />
 
-        <Box 
-          style={{ position: 'absolute' }} 
+        <Box
+          style={{ position: 'absolute' }}
           gap="small"
           fill
           pad="medium"
@@ -98,7 +97,7 @@ export const Home: React.FC = () => {
           align="center"
         >
           <Box flex gap="small">
-            <Box 
+            <Box
               pad="small"
               round="small"
               elevation="small"
@@ -109,7 +108,7 @@ export const Home: React.FC = () => {
               </Heading>
             </Box>
 
-            <Box 
+            <Box
               pad="small"
               round="small"
               elevation="small"
@@ -122,7 +121,7 @@ export const Home: React.FC = () => {
               <Text size="large">{state.user?.name}</Text>
             </Box>
 
-            <Box 
+            <Box
               pad="small"
               round="small"
               elevation="small"
@@ -135,7 +134,7 @@ export const Home: React.FC = () => {
               <Text size="large">{state.user?.phone}</Text>
             </Box>
 
-            <Box 
+            <Box
               pad="small"
               round="small"
               elevation="small"
@@ -145,9 +144,9 @@ export const Home: React.FC = () => {
               gap="small"
             >
               <ClockIcon />
-              <Clock 
-                type="digital" 
-                time={state.userTicket.createdAt.toString()} 
+              <Clock
+                type="digital"
+                time={state.userTicket.createdAt.toString()}
                 run={false}
               />
             </Box>
@@ -161,7 +160,13 @@ export const Home: React.FC = () => {
         </Box>
       </Box>
 
-      <Box 
+      {error && (
+        <Box pad="small">
+          <Text color="status-error">{error}</Text>
+        </Box>
+      )}
+
+      <Box
         direction="row"
         wrap
         gap="small"
@@ -169,15 +174,15 @@ export const Home: React.FC = () => {
         width="large"
         pad={{ right: 'medium', left: 'medium' }}
       >
-        {ticketsSorted.map((ticket, index) => (
-          <Tip 
+        {ticketsSorted.map((ticket) => (
+          <Tip
             key={ticket.id}
-            content={ticket.status === 'canceled' 
+            content={ticket.status === 'canceled'
               ? 'Canceled'
               : <Clock type="digital" run={false} time={ticket.createdAt.toString()} />
             }
           >
-            <Box 
+            <Box
               round="full"
               justify="center"
               align="center"
@@ -197,17 +202,17 @@ export const Home: React.FC = () => {
       </Box>
     </>
     ) : (
-    <Box 
-      pad="medium" 
-      direction="row" 
+    <Box
+      pad="medium"
+      direction="row"
       animation={['fadeIn', 'slideUp']}
     >
       <Button
-        primary 
-        label="Get a ticket" 
+        primary
+        label="Get a ticket"
         onClick={handleTicketTake}
         size="large"
-        icon={handlingTakeTicket ? <Spinner /> : <TicketIcon />} 
+        icon={handlingTakeTicket ? <Spinner /> : <TicketIcon />}
       />
     </Box>
   )

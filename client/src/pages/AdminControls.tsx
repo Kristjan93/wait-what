@@ -1,6 +1,6 @@
 import { Box, Tip, Clock, Text, List, Menu, Button } from 'grommet'
 import { More } from 'grommet-icons'
-import React from 'react'
+import React, { useState } from 'react'
 import { __api__ } from '../constants/endpoint'
 import { ContextAuthorized, useAppState } from '../providers/appProvider'
 import { ResponseAdminStatus, ResponseTicketsNext } from '../types/responses'
@@ -9,9 +9,11 @@ import { jsxConditions } from '../utils/jsxConditions'
 
 export const AdminControls: React.FC = () => {
   const { state, dispatch } = useAppState() as ContextAuthorized
+  const [error, setError] = useState<string | null>(null)
 
   const handleChangeStatus = async (id: string, status: TicketStatus) => {
-    const response = await fetch(`${__api__}/admin/tickets/${id}/status`, { 
+    setError(null)
+    const response = await fetch(`${__api__}/admin/tickets/${id}/status`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -24,14 +26,13 @@ export const AdminControls: React.FC = () => {
       dispatch({ type: 'TICKETS', value: { tickets } })
     }
     else {
-      console.error('error')
-      console.log(response)
-      // TODO: handle error
+      setError('Failed to update ticket status')
     }
   }
 
   const handleNext = async () => {
-    const response = await fetch(`${__api__}/admin/tickets/next`, { 
+    setError(null)
+    const response = await fetch(`${__api__}/admin/tickets/next`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -43,16 +44,14 @@ export const AdminControls: React.FC = () => {
       dispatch({ type: 'TICKETS', value: { tickets } })
     }
     else {
-      console.error('error')
-      console.log(response)
-      // TODO: handle error
+      setError('No tickets in queue')
     }
   }
 
   const ticketsSorted = state.tickets.sort( (a,b) => a.queueNumber - b.queueNumber)
 
   return (
-    <Box 
+    <Box
         direction="row"
         wrap
         gap="small"
@@ -62,6 +61,11 @@ export const AdminControls: React.FC = () => {
       >
         <Box fill="horizontal" pad={{ bottom: 'medium' }}>
           <Button secondary label="Next!" onClick={handleNext} />
+          {error && (
+            <Box pad={{ top: 'small' }}>
+              <Text color="status-error">{error}</Text>
+            </Box>
+          )}
         </Box>
 
         <Box fill="horizontal">
@@ -84,15 +88,15 @@ export const AdminControls: React.FC = () => {
           />
         </Box>
 
-        {ticketsSorted.map((ticket, index) => (
-          <Tip 
+        {ticketsSorted.map((ticket) => (
+          <Tip
             key={ticket.id}
-            content={ticket.status === 'canceled' 
+            content={ticket.status === 'canceled'
               ? 'Canceled'
               : <Clock type="digital" run={false} time={ticket.createdAt.toString()} />
             }
           >
-            <Box 
+            <Box
               round="full"
               justify="center"
               align="center"

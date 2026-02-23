@@ -12,10 +12,8 @@ interface IFormData {
 }
 
 export const Login: React.FC = () => {
-  // const { dispatch } = useAppState()
-  // const history = useHistory()
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<IFormData>()
-  
+
   const onSubmit: SubmitHandler<IFormData> = async ({ phone, name }) => {
     const response = await fetch(`${__api__}/login`, {
       method: 'POST',
@@ -28,15 +26,13 @@ export const Login: React.FC = () => {
     if(response.ok) {
       const { token } = await response.json() as ResponseLogin
       localStorage.setItem('token', token)
-      // await response.json() as ResponseLogin
-
       window.location.href = '/'
     }
-  };
+  }
 
   return (
     <>
-      <Box 
+      <Box
         pad="medium"
         as="form"
         onSubmit={handleSubmit(onSubmit)}
@@ -51,7 +47,7 @@ export const Login: React.FC = () => {
       >
         {isSubmitting && (
           <Box
-            style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }} 
+            style={{ position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 }}
             background="rgba(0,0,0,0.2)"
             align="center"
             justify="center"
@@ -61,7 +57,7 @@ export const Login: React.FC = () => {
           </Box>
         )}
 
-        <FormField 
+        <FormField
           label="Nafn"
           fill="horizontal"
           error={errorsToString([
@@ -71,9 +67,9 @@ export const Login: React.FC = () => {
             ])
           }
         >
-          <TextInput 
-            {...register("name", { 
-              required: true, 
+          <TextInput
+            {...register("name", {
+              required: true,
               maxLength: 120
             })}
             icon={<User />}
@@ -83,13 +79,13 @@ export const Login: React.FC = () => {
         </FormField>
 
         <Box direction="row" fill="horizontal" align='end' gap="small">
-          <FormField 
-            label="" 
-            fill="horizontal" 
-            style={{ width: '120px' }} 
+          <FormField
+            label=""
+            fill="horizontal"
+            style={{ width: '120px' }}
             error={errors.phone && '_'}
           >
-            <TextInput 
+            <TextInput
               type="text"
               placeholder=""
               value="+354"
@@ -97,8 +93,8 @@ export const Login: React.FC = () => {
             />
           </FormField>
 
-          <FormField 
-            label="Símanúmer" 
+          <FormField
+            label="Simanumer"
             fill="horizontal"
             error={errorsToString([
               errors.phone?.type === 'required' && 'required',
@@ -106,33 +102,32 @@ export const Login: React.FC = () => {
               errors.phone?.type === 'maxLength' && 'invalid phone number'
             ])}
           >
-              <TextInput 
-                {...register("phone", { 
-                  required: true, 
+              <TextInput
+                {...register("phone", {
+                  required: true,
                   minLength: 7,
                   maxLength: 7,
                 })}
                 icon={<Phone />}
                 type="tel"
-                placeholder="Símanúmer"
+                placeholder="Simanumer"
               />
           </FormField>
         </Box>
-        
-        <Box 
-          direction="row" 
-          fill="horizontal" 
+
+        <Box
+          direction="row"
+          fill="horizontal"
           justify="end"
         >
-          <Button 
-            icon={<Send />} 
-            primary 
-            label="Senda kóða" 
+          <Button
+            icon={<Send />}
+            primary
+            label="Senda koda"
             type="submit"
             size="small"
             disabled={isSubmitting}
           />
-          {/* <Spinner /> */}
         </Box>
       </Box>
     </>

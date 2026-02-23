@@ -1,16 +1,17 @@
 import React, { useEffect } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { __api__ } from '../constants/endpoint'
 
 export const Logout: React.FC = () => {
-  const history = useHistory()
+  const navigate = useNavigate()
   useEffect(() => {
-    const asynchronous = async () => {
+    const logout = async () => {
       await fetch(`${__api__}/logout`, { method: 'POST', credentials: 'include' })
-      window.location.href='/'
+      localStorage.removeItem('token')
+      window.location.href = '/'
     }
-    asynchronous()
-  }, [history])
+    logout()
+  }, [navigate])
 
   return <div>Logout</div>
 }
